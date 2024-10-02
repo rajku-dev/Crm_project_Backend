@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import sendMail from "../mail/employeeMail.js";
 import Employee from "../model/employee.js";
 import bcrypt from "bcrypt";
+import { generateToken } from "../auth/auth.js";
 
 //Adding New Employee
 export const addEmployee = async (req, res) => {
@@ -23,6 +24,13 @@ export const addEmployee = async (req, res) => {
       dob,
       doj,
     } = req.body;
+
+    const user = req.user;
+    if (!user.isAdmin) {
+      return res
+        .status(401)
+        .json({ message: "You do not have permission to access this page." });
+    }
 
     if (
       !full_name ||
@@ -122,7 +130,13 @@ export const login = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials!" });
     }
-    return res.status(200).json({ message: "Login successfully!" });
+    const payload = {
+      id: exisitingEmployee._id,
+      post: exisitingEmployee.post,
+      isAdmin: exisitingEmployee.isAdmin,
+    };
+    const token = await generateToken(payload);
+    return res.status(200).json({ message: "Login successfully!", token });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error!" });
   }
