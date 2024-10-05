@@ -29,3 +29,16 @@ connectDb()
 
 //Routers
 app.use("/api/employee", routes);
+connectDb()
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`Server listening at localhost:${port}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to start server:", err);
+    process.exit(1);
+  });
+
+//Routers
+app.use("/api/employee", routes);
