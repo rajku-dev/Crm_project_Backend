@@ -1,76 +1,44 @@
-import React, { useState, useEffect } from "react";
-import Select from "react-select";
-import axios from "./axios";
-// import departments from "../constant/Department";
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { addEmployee, setDepartments } from '../redux/features/employeeSlice';
+import Select from 'react-select';
 
-function addEmployee() {
-  const [selectedDepartments, setSelectedDepartments] = useState([]);
-  // const [full_name, setFull_name] = useState("");
-  // const [email, setEmail] = useState("");
-  // const [gender, setGender] = useState("");
-  // const [phone, setPhone] = useState("");
-  // const [password, setPassword] = useState("");
-  // const [departments, setDepartments] = useState("");
-  // const [post, setPost] = useState("");
-  // const [address, setAddress] = useState("");
-  // const [city, setCity] = useState("");
-  // const [state, setState] = useState("");
-  // const [country, setCountry] = useState("");
-  // const [college, setCollege] = useState("");
-  // const [image, setImage] = useState("");
-  // const [qualification, setQualification] = useState("");
-  // const [dob, setDob] = useState("");
-  // const [doj, setDoj] = useState("");
+function AddEmployee() {
+  const dispatch = useDispatch();
+  const selectedDepartments = useSelector(
+    (state) => state.employee.selectedDepartments
+  );
 
   const [employee, setEmployee] = useState({
-    full_name: "",
-    email: "",
-    gender: "",
-    phone: "",
-    selectedDepartments: selectedDepartments,
-    // password,
-    // departments,
-    post: "",
-    address: "",
-    city: "",
-    state: "",
-    country: "",
-    college: "",
-    image: "",
-    qualification: "",
-    // qualificationYear,
-    dob: "",
-    doj: "",
+    full_name: '',
+    email: '',
+    gender: '',
+    phone: '',
+    post: '',
+    address: '',
+    city: '',
+    state: '',
+    country: '',
+    college: '',
+    image: '',
+    qualification: '',
+    dob: '',
+    doj: '',
   });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const headers = {
-        authorization: `Bearer ${localStorage.getItem("token")}`,
-      };
-      const response = await axios.post("/add-employee", {
-        employee,
-        headers,
-      });
-      console.log("Employee added!", response.data);
-      navigate("/sidebar");
-
-      // localStorage.setItem("id", response.data.id);
-      localStorage.setItem("id", response.data.id);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   const departmentOptions = [
-    { value: "HR", label: "HR" },
-    { value: "Engineering", label: "Engineering" },
-    { value: "Marketing", label: "Marketing" },
+    { value: 'HR', label: 'HR' },
+    { value: 'Engineering', label: 'Engineering' },
+    { value: 'Marketing', label: 'Marketing' },
   ];
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(addEmployee({ ...employee, departments: selectedDepartments }));
+  };
+
   const handleDepartmentChange = (selectedOptions) => {
-    setSelectedDepartments(selectedOptions || []);
+    dispatch(setDepartments(selectedOptions || []));
   };
 
   return (
@@ -342,4 +310,4 @@ function addEmployee() {
   );
 }
 
-export default addEmployee;
+export default AddEmployee;

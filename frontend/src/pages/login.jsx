@@ -1,39 +1,35 @@
 import React, { useState } from "react";
 import loginSvg from "../../public/Group.png";
-import axios from "./axios";
-// import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../redux/features/authSlice"; // import the loginUser action
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const errorMessage = useSelector((state) => state.auth.errorMessage);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post("/login", {
-        email,
-        password,
+    // Dispatch the loginUser action and navigate if successful
+    dispatch(loginUser(email, password))
+      .then((result) => {
+        if (!result.error) {
+          navigate("/sidebar");
+        }
       });
-      console.log("Login successful!", response.data);
-      navigate("/sidebar");
-
-      localStorage.setItem("token", response.data.token);
-    } catch (err) {
-      console.log(err);
-    }
   };
 
   return (
     <section className="flex items-center justify-center min-h-screen p-14 bg-gradient-to-r from-blue-300 to-blue-500">
       <div className="flex flex-col md:flex-row items-center justify-center w-full min-h-screen p-6 rounded-xl shadow-lg bg-white">
-        <div className="flex justify-center items-center ">
+        <div className="flex justify-center items-center">
           <img src={loginSvg} alt="Login Illustration" className="" />
         </div>
 
-        <div className="flex flex-col  p-6">
+        <div className="flex flex-col p-6">
           <h1
             className="text-[35px] font-normal leading-[46.38px] mb-4 text-center"
             style={{
@@ -53,6 +49,7 @@ function Login() {
               name="email"
               className="mb-4 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               onChange={(e) => setEmail(e.target.value)}
+              value={email}
             />
             <input
               type="password"
@@ -60,6 +57,7 @@ function Login() {
               name="password"
               className="mb-4 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               onChange={(e) => setPassword(e.target.value)}
+              value={password}
             />
 
             <div className="flex justify-between items-center mb-8">
@@ -77,6 +75,10 @@ function Login() {
                 Forgot password?
               </a>
             </div>
+
+            {errorMessage && (
+              <p className="text-red-500 text-sm mb-4">{errorMessage}</p> // Show error message
+            )}
 
             <button
               type="submit"
