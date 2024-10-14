@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
+import axios from '../../pages/axios.jsx';
 
 const employeeSlice = createSlice({
   name: 'employee',
